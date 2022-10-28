@@ -1,16 +1,31 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import Dispositivos from '../pages/Dispositivos';
+import StackAppRoutes from './stackApp.routes'
+import NewDevice from '../pages/NewDevice';
 
+const Drawer = createDrawerNavigator();
 
-const Stack = createNativeStackNavigator();
+import DrawerApp from '../components/Drawer/drawer';
 
 function AppRoutes(){
     return(
-        <Stack.Navigator>
-            <Stack.Screen name="Dispositivos" component={Dispositivos} options={{ headerShown: false}}/>
-        </Stack.Navigator>
+        <Drawer.Navigator
+            drawerContent={DrawerApp}
+            screenOptions={{
+                headerShown: false,
+                drawerActiveTintColor: '#004aad'
+            }}>
+            <Drawer.Screen 
+            name='Gerenciar Dispositivos'
+            component={StackAppRoutes}
+            />
+            <Drawer.Screen 
+            name='Adicionar Dispositivos'
+            component={NewDevice}
+            />
+        </Drawer.Navigator>
+        
     )
 }
 

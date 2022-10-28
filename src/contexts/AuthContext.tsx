@@ -72,11 +72,8 @@ export function AuthProvider({children}: AuthProviderProps){
         setLoadingAuth(true);
 
         try{
-
-            const response = await api.post('/authUser',{
-                email,
-                senha
-            })
+            let payload = { email: email, senha: senha }
+            const response = await api.post('/authUser', payload)
 
             const { id, nome, token } = response.data;
 

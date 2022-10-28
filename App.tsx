@@ -1,10 +1,10 @@
-
+import 'react-native-gesture-handler';
 import { StatusBar } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import Routes from './src/routes';
 
-import { AuthContext, AuthProvider } from './src/contexts/AuthContext';
+import { AuthProvider } from './src/contexts/AuthContext';
 
 export default function App() {
   return (

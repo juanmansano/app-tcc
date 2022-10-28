@@ -14,20 +14,19 @@ import {
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { AuthContext } from "../../contexts/AuthContext";
-import { StackParamsList } from "../../routes/auth.routes"
+import { api } from "../../services/api";
 
 
-
-export default function SingIn(){
-    const navigation = useNavigation<NativeStackNavigationProp<StackParamsList>>();
+export default function CreateUser(){
+    const navigation = useNavigation();
 
     const { singIn, loadingAuth } = useContext(AuthContext)
 
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
+    const [nome, setNome] = useState('')
 
     async function handleLogin(){
 
@@ -37,11 +36,37 @@ export default function SingIn(){
         await singIn({ email, senha })
     }
 
+    async function createUser(){
+
+        if(email === '' || senha === '' || nome  === ''){
+            return;
+        }
+
+        try{
+
+            const response = await api.post('/createUser',{
+                nome,
+                email,
+                senha
+            })
+
+        }catch(err){
+            console.log('erro ao acessar', err);
+            setEmail('');
+            setSenha('');
+            setNome('');
+            return;
+        }
+
+        handleLogin();
+    }
+
     return(
         <TouchableWithoutFeedback
         touchSoundDisabled
         onPress={() => {Keyboard.dismiss()}}>
             <SafeAreaView style={styles.container}>
+
                 <KeyboardAvoidingView 
                     behavior={Platform.OS == "ios" ? "padding" : "height"}
                     style={{alignItems: 'center', justifyContent: 'center', height:'100%'}}>
@@ -50,35 +75,44 @@ export default function SingIn(){
                             source={require('../../assets/logo17.png')}
                             resizeMode='stretch'
                             />
+
+                        <Text style={{marginBottom:5, fontWeight: 'bold', color: '#004aad'}}>Criar novo Usuario: </Text>
                     
-                        <TextInput 
+                        <TextInput
+                            placeholder='Digite seu nome'
+                            style={styles.input}
+                            value={nome}
+                            onChangeText={ (texto) => setNome(texto)}
+                        />
+                        <TextInput
                             placeholder='Digite seu email'
                             style={styles.input}
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={ (texto) => setEmail(texto)}
                             keyboardType={'email-address'}
                             autoCapitalize={'none'}
                         />
-                        <TextInput 
+                        <TextInput
                             placeholder='Digite sua senha'
                             style={styles.input}
-                            secureTextEntry={true}
                             value={senha}
-                            onChangeText={setSenha}
+                            onChangeText={ (texto) => setSenha(texto)}
+                            secureTextEntry={true}
                         />
                         
-                        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                        <TouchableOpacity style={styles.button} onPress={createUser}>
                             { loadingAuth ? (
                                 <ActivityIndicator size={20} color="#FFF"/>
                             ) : (
-                                <Text style={styles.buttonText}>Acessar</Text>
+                                <Text style={styles.buttonText}>Confirmar e Acessar</Text>
                             )}
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('CreateUser') }}>
-                                <Text style={styles.buttonText}>Criar Novo Usuário</Text>
+                        <TouchableOpacity style={styles.button} onPress={() => { navigation.goBack() }}>
+                                <Text style={styles.buttonText}>Voltar</Text>
                         </TouchableOpacity>
                 </KeyboardAvoidingView>
+
             </SafeAreaView>
         </TouchableWithoutFeedback>
     )
