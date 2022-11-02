@@ -10,6 +10,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     TouchableWithoutFeedback,
+    Alert,
     Keyboard
 } from 'react-native';
 
@@ -32,6 +33,7 @@ export default function SingIn(){
     async function handleLogin(){
 
         if(email === '' || senha === ''){
+            Alert.alert('Dados não preenchidos', 'Favor preencher todos os dados!', [{ text: 'OK', onPress: () => Keyboard.dismiss() }]);
             return;
         }
         await singIn({ email, senha })
@@ -52,7 +54,7 @@ export default function SingIn(){
                             />
                     
                         <TextInput 
-                            placeholder='Digite seu email'
+                            placeholder='E-mail'
                             style={styles.input}
                             value={email}
                             onChangeText={setEmail}
@@ -60,7 +62,7 @@ export default function SingIn(){
                             autoCapitalize={'none'}
                         />
                         <TextInput 
-                            placeholder='Digite sua senha'
+                            placeholder='Senha'
                             style={styles.input}
                             secureTextEntry={true}
                             value={senha}

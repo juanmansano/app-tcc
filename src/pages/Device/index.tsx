@@ -77,6 +77,7 @@ export default function Device(){
         
       <FlatList
       data={dispositivos}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }: { item: DispositivoProps} ) => (
         <View style={styles.containerDevices}>
           <Pressable style={{
@@ -85,11 +86,11 @@ export default function Device(){
                         justifyContent: 'center'}} 
                     onPress={( ) => navigation.navigate('EditDevice', 
                                     {id: item.id, 
-                                    ligado: item.ligado, 
                                     nome: item.nome, 
                                     ultima_atividade_id: item.id_ultima_atividade, 
                                     ultima_atividade_nome: (item.atividade.map((atividade: AtividadesProps) => atividade.nome)).toString(),
-                                    owner: item.owner}) }>
+                                    owner: item.owner,
+                                    edit: true}) }>
               <MaterialCommunityIcons name={carregaIcone(item)} size={30} color={carregaColor(item)} />
               <View style={{flexDirection: 'column'}}>
                 <Text style={styles.titulo} > { item.nome.substring(0,15) } </Text>
@@ -97,7 +98,7 @@ export default function Device(){
               </View>
           </Pressable>
           <Switch 
-              value={!! item.ligado}
+              value={ !!item.ligado }
               onValueChange={ () => changeLigado(item)}
               thumbColor={'#F4F4F4'}
               trackColor={{false:'#aaa', true:'#fff100'}}

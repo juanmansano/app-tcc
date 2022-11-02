@@ -10,7 +10,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -39,26 +40,35 @@ export default function CreateUser(){
     async function createUser(){
 
         if(email === '' || senha === '' || nome  === ''){
+            Alert.alert('Dados não preenchidos', 'Favor preencher todos os dados!', [{ text: 'OK', onPress: () => Keyboard.dismiss() }]);
             return;
         }
 
-        try{
+        let usuario = email.substring(0, email.indexOf("@"));
+        let dominio = email.substring(email.indexOf("@")+ 1, email.length);
 
-            const response = await api.post('/createUser',{
+
+        if ((usuario.length >=1) &&
+            (dominio.length >=3) &&
+            (usuario.search("@")==-1) &&
+            (dominio.search("@")==-1) &&
+            (usuario.search(" ")==-1) &&
+            (dominio.search(" ")==-1) &&
+            (dominio.search(".")!=-1) &&
+            (dominio.indexOf(".") >=1)&&
+            (dominio.lastIndexOf(".") < dominio.length - 1)) {
+            
+                const response = await api.post('/createUser',{
                 nome,
                 email,
                 senha
             })
-
-        }catch(err){
-            console.log('erro ao acessar', err);
-            setEmail('');
-            setSenha('');
-            setNome('');
+            handleLogin();
+        }
+        else{
+            Alert.alert('Email inválido', 'Favor preencher um email válido!', [{ text: 'OK', onPress: () => Keyboard.dismiss() }]);
             return;
         }
-
-        handleLogin();
     }
 
     return(
@@ -79,13 +89,13 @@ export default function CreateUser(){
                         <Text style={{marginBottom:5, fontWeight: 'bold', color: '#004aad'}}>Criar novo Usuario: </Text>
                     
                         <TextInput
-                            placeholder='Digite seu nome'
+                            placeholder='Nome'
                             style={styles.input}
                             value={nome}
                             onChangeText={ (texto) => setNome(texto)}
                         />
                         <TextInput
-                            placeholder='Digite seu email'
+                            placeholder='E-mail'
                             style={styles.input}
                             value={email}
                             onChangeText={ (texto) => setEmail(texto)}
@@ -93,7 +103,7 @@ export default function CreateUser(){
                             autoCapitalize={'none'}
                         />
                         <TextInput
-                            placeholder='Digite sua senha'
+                            placeholder='Senha'
                             style={styles.input}
                             value={senha}
                             onChangeText={ (texto) => setSenha(texto)}

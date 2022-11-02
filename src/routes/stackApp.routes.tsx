@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Device from '../pages/Device';
 import EditDevice from '../pages/EditDevice';
+import EditNewDevice from '../pages/EditNewDevice';
 
 
 export type StackAppParamsList = {
@@ -10,10 +11,15 @@ export type StackAppParamsList = {
     EditDevice: {
         id: number,
         nome: string,
-        ligado: boolean,
         ultima_atividade_id: number,
         ultima_atividade_nome: string,
-        owner: number
+        owner: number,
+        edit: boolean
+    },
+    EditNewDevice: {
+        nome: string,
+        owner: number,
+        data_criacao: string
     }
 }
 
@@ -23,8 +29,9 @@ const Stack = createNativeStackNavigator<StackAppParamsList>();
 function StackAppRoutes(){
     return(
         <Stack.Navigator>
-            <Stack.Screen name='Device' component={Device} options={{ headerShown: false}} initialParams={{hasUpdated: false}}/>
+            <Stack.Screen name='Device' component={Device} options={{ headerShown: false}}/>
             <Stack.Screen name="EditDevice" component={EditDevice} options={{headerShown: false}}/>
+            <Stack.Screen name="EditNewDevice" component={EditNewDevice} options={{headerShown: false}}/>
         </Stack.Navigator>
     )
 }

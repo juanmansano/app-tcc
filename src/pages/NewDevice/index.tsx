@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { SafeAreaView, StyleSheet, View, TouchableOpacity, TextInput, Image, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, View, TouchableOpacity, TextInput, Image, Text, Platform, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+
+import moment from 'moment';
 
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -26,44 +28,47 @@ export default function NewDevice(){
 
   useFocusEffect(
     React.useCallback(() => {
-      getInfo();
+      setCorrectIP(false);
+      const unsubscribe = NetInfo.addEventListener((state) => {setIP(state.details.ipAddress);});
+
+      return () => {unsubscribe();}
     }, [])
-   );
+  );
 
-  function verificaIP(){
+  async function verificaIP(){
 
-    getInfo();
-    alert(IP)
-    if (IP !== undefined) {
-      if(IP.startsWith('192.168.4')) {
-        setCorrectIP(true);
-        unsubscribe();
+      await NetInfo.fetch().then( (state) =>
+        {setIP(state.details.ipAddress);}
+      );
+      if (IP !== undefined) {
+        if(IP.startsWith('192.168.4')) {
+          setCorrectIP(true);
+        }
       }
-    }
   }  
 
-  const unsubscribe = NetInfo.addEventListener(() => {});
-
-  async function getInfo(){
-    await NetInfo.fetch().then(state => {
-      setIP(state.details.ipAddress);
-    });
-  }
-
   async function newDevice(){
-    let payload = { id_usuario: user.id, nome: nome, ssid: ssid, pass: password }
+    let data =  moment().format("DD/MM/YYYY HH:mm:ss");
+    let payload = { id_usuario: user.id, nome: nome, ssid: ssid, pass: password, data_criacao: data };
     await axios.post('http://192.168.4.1/',payload);
     setCorrectIP(false);
     setNome('');
     setSSID('');
     setPass('');
     setIP('');
-    stack_navigation.navigate('Device');
+    stack_navigation.navigate('EditNewDevice', {nome: nome, owner: user.id, data_criacao: data} );
   }
 
   return(
+
+    <TouchableWithoutFeedback
+    touchSoundDisabled
+    onPress={() => {Keyboard.dismiss()}}>
     <SafeAreaView style={styles.container}>
-      <View style={{flexDirection: 'row', alignItems:'center', justifyContent:'flex-start', marginTop: 30}}>
+      <KeyboardAvoidingView 
+                    behavior={Platform.OS == "ios" ? "padding" : "height"}
+                    style={{alignItems: 'center', justifyContent: 'flex-start', height:'100%'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'flex-start'}}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <MaterialCommunityIcons name="menu" size={24} color="#004aad" />
         </TouchableOpacity>
@@ -76,21 +81,21 @@ export default function NewDevice(){
       { correctIP ? (
                 <View style={{justifyContent:'center', alignItems:'center'}}>
                   <Text style={styles.text}>Já estamos quase terminando a configuração, por favor, 
-                                            insira agora um nome para seu dispositivo</Text>
+                                            preencha os campos a baixo</Text>
                   <TextInput
-                    placeholder='Digite o nome do dispositivo'
+                    placeholder='Nome do dispositivo'
                     style={styles.input}
                     value={nome}
-                    onChangeText={ (texto) => setNome(texto)}
+                    onChangeText={ (texto) => setNome(texto.normalize('NFD').replace(/[\u0300-\u036f]/g,""))}
                   />
                   <TextInput
-                    placeholder='Digite o nome da sua rede wi-fi'
+                    placeholder='Wi-fi para conectar o dispositivo'
                     style={styles.input}
                     value={ssid}
                     onChangeText={ (texto) => setSSID(texto)}
                   />
                   <TextInput
-                    placeholder='Digite a senha da sua rede wi-fi'
+                    placeholder='Senha da wi-fi'
                     style={styles.input}
                     secureTextEntry={true}
                     value={password}
@@ -105,14 +110,16 @@ export default function NewDevice(){
                   <Text style={styles.text}>Para iniciar a configurações primeiramente 
                                             conecte seu dispositivo na tomada e
                                             acesse a rede wi-fi: LUNO-AP.</Text>
+                  <Text style={styles.text}>Caso esteja ativado, favor desativar os dados móveis.</Text>
                   <Text style={styles.text}>Após isso, clique para prosseguir!</Text> 
                   <TouchableOpacity style={styles.button} onPress={verificaIP}>
                     <Text style={styles.buttonText}>Prosseguir</Text>
                   </TouchableOpacity>
                 </View>
                 )}
-
+      </KeyboardAvoidingView>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

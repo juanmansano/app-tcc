@@ -21,7 +21,7 @@ export default function DrawerApp(props){
             </View>
 
             <View style={{justifyContent:'flex-end', alignItems:'center', marginTop:50}}>
-                <TouchableOpacity style={styles.logOut} onPress={() =>  signOut()}>
+                <TouchableOpacity style={styles.logOut} onPress={() => { props.navigation.closeDrawer(); signOut(); } }>
                     <MaterialCommunityIcons name="exit-to-app" size={24} color="#fff" />
                     <Text style={styles.textAddDevice}>Sair</Text>
                 </TouchableOpacity>

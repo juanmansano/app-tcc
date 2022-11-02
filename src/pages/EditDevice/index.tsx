@@ -14,10 +14,10 @@ type RouteParams ={
     Device:{
         id: number,
         nome: string,
-        ligado: boolean
         ultima_atividade_id: number,
         ultima_atividade_nome: string,
-        owner: number
+        owner: number,
+        edit: boolean
     }
 }
 
@@ -35,7 +35,7 @@ type DeviceRouteProps = RouteProp<RouteParams, 'Device'>;
 const { width: WIDTH, height: HEIGHT } = Dimensions.get('window')
 
 
-export default function Device(){
+export default function EditDevice(){
     const route = useRoute<DeviceRouteProps>();
     const navigation = useNavigation<NativeStackNavigationProp<StackAppParamsList>>();
     const { user } = useContext(AuthContext);
@@ -66,12 +66,6 @@ export default function Device(){
         setAutorizados(request.data)
     }
 
-
-    async function changeLigado(data: DispositivoProps){
-        let payload = { usuario_ultima_atualizacao: user.id, ligado: !data.ligado }
-        await api.post('statusDispositivo/id=' + data.id, payload);
-    }
-
     async function changeConfigurations(){
 
         let payload = { usuario_ultima_atualizacao: user.id, id_ultima_atividade:  + idAtividadeSelecionada }
@@ -87,7 +81,7 @@ export default function Device(){
         
         let payload = { id_dispositivo: route.params.id, ativo: ativo, email: email}
 
-        const response = await api.post('/changeAutorizacao', payload)
+        await api.post('/changeAutorizacao', payload)
         loadAutorizados();
         setModalAddUser(false);
         setEmail('');
@@ -182,11 +176,13 @@ export default function Device(){
             
             <View>
                 <TouchableOpacity style={styles.button} onPress={ changeConfigurations }> 
-                    <Text style={styles.buttonText}> Atualizar </Text> 
+                    <Text style={styles.buttonText}> Salvar </Text> 
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => { navigation.goBack() }}> 
-                    <Text  style={styles.buttonText}> Cancelar </Text> 
-                </TouchableOpacity>
+                { route.params.edit ? (
+                    <TouchableOpacity style={styles.button} onPress={() => { navigation.goBack() }}> 
+                        <Text  style={styles.buttonText}> Cancelar </Text> 
+                    </TouchableOpacity>) : (<Text></Text>) 
+                }
             </View>
 
             <Modal

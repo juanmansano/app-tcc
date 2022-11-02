@@ -1,4 +1,8 @@
 import React, {useState, createContext, ReactNode, useEffect } from "react";
+import {
+    Alert,
+    Keyboard
+} from 'react-native';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -95,7 +99,7 @@ export function AuthProvider({children}: AuthProviderProps){
             setLoadingAuth(false);
 
         }catch(err){
-            console.log('erro ao acessar', err);
+            Alert.alert('Dados não conferem!', 'Favor tentar novamente!', [{ text: 'OK', onPress: () => Keyboard.dismiss() }]);
             setLoadingAuth(false);
         }
     }
