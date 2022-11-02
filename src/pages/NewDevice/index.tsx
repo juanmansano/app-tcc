@@ -89,7 +89,7 @@ export default function NewDevice(){
                     onChangeText={ (texto) => setNome(texto.normalize('NFD').replace(/[\u0300-\u036f]/g,""))}
                   />
                   <TextInput
-                    placeholder='Wi-fi para conectar o dispositivo'
+                    placeholder='Nome da wi-fi para conectar o dispositivo'
                     style={styles.input}
                     value={ssid}
                     onChangeText={ (texto) => setSSID(texto)}
